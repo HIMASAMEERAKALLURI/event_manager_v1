@@ -8,6 +8,10 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import UUID, ENUM
 from sqlalchemy.orm import Mapped, mapped_column
 from app.database import Base
+import logging
+import logging.config
+
+logging.config.fileConfig('logging.conf')
 
 class UserRole(Enum):
     """Enumeration of user roles within the application, stored as ENUM in the database."""
@@ -80,18 +84,31 @@ class User(Base):
         return f"<User {self.nickname}, Role: {self.role.name}>"
 
     def lock_account(self):
-        self.is_locked = True
+        try:
+            self.is_locked = True
+        except Exception as e:
+            logging.error(f"Error occurred while locking account: {str(e)}")
+            raise e
 
     def unlock_account(self):
-        self.is_locked = False
+        try:
+            self.is_locked = False
+        except Exception as e:
+            logging.error(f"Error occurred while unlocking account: {str(e)}")
+            raise e
 
     def verify_email(self):
-        self.email_verified = True
-
-    def has_role(self, role_name: UserRole) -> bool:
-        return self.role == role_name
+        try:
+            self.email_verified = True
+        except Exception as e:
+            logging.error(f"Error occurred while verifying email: {str(e)}")
+            raise e
 
     def update_professional_status(self, status: bool):
         """Updates the professional status and logs the update time."""
-        self.is_professional = status
-        self.professional_status_updated_at = func.now()
+        try:
+            self.is_professional = status
+            self.professional_status_updated_at = func.now()
+        except Exception as e:
+            logging.error(f"Error occurred while updating professional status: {str(e)}")
+            raise e
