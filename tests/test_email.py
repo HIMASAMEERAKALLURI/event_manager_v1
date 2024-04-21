@@ -44,7 +44,6 @@ from app.models.user_model import User
 from app.utils.smtp_connection import SMTPClient
 from unittest.mock import Mock
 
-
 @pytest.fixture
 def email_service():
     template_manager = TemplateManager()
